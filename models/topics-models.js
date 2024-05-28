@@ -10,4 +10,3 @@ exports.selectAllTopics = () => {
       console.log(err);
     });
 };
-
