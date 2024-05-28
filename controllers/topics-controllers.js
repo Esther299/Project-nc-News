@@ -9,3 +9,4 @@ exports.getTopics = (req, res, next) => {
       next(err);
     });
 };
+
