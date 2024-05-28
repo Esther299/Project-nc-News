@@ -25,5 +25,37 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object of an article searched by its id",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 3,
+        "title": "Eight pug gifs that remind me of mitch",
+        "body": "some gifs",
+        "author": "icellusedkars",
+        "topic": "mitch",
+        "created_at": "2020-11-03T08:12:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves and array of comments with all the same aritcle id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "votes": 10,
+          "created_at": "2023-05-28T12:34:56Z",
+          "author": "user1",
+          "body": "This is a comment.",
+          "article_id": 1
+        }
+      ]
+    }
   }
 }

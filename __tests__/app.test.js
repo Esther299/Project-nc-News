@@ -70,7 +70,7 @@ describe('GET api articles by article Id', () => {
           article_id: 3,
           title: 'Eight pug gifs that remind me of mitch',
           body: 'some gifs',
-          author: "icellusedkars",
+          author: 'icellusedkars',
           topic: 'mitch',
           created_at: '2020-11-03T08:12:00.000Z',
           votes: 0,
@@ -79,6 +79,7 @@ describe('GET api articles by article Id', () => {
         });
       });
   });
+
   test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
     return request(app)
       .get('/api/articles/999')
@@ -87,6 +88,7 @@ describe('GET api articles by article Id', () => {
         expect(body.msg).toBe('article does not exist');
       });
   });
+
   test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
     return request(app)
       .get('/api/articles/not-an-article')
@@ -122,3 +124,51 @@ describe('GET api articles', () => {
       });
   });
 });
+
+describe('GET api comments by article Id', () => {
+  test('GET:200 sends a single comment of article id enpoint to the client', () => {
+    return request(app)
+      .get('/api/articles/9/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([
+          {
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            article_id: 9,
+            author: 'butter_bridge',
+            votes: 16,
+            created_at: '2020-04-06T11:17:00.000Z',
+          },
+          {
+            comment_id: 17,
+            body: 'The owls are not what they seem.',
+            article_id: 9,
+            author: 'icellusedkars',
+            votes: 20,
+            created_at: '2020-03-14T16:02:00.000Z',
+          },
+        ]);
+      });
+  });
+
+  test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+    return request(app)
+      .get('/api/articles/9999/comments')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('article does not exist');
+      });
+  });
+
+  test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
+    return request(app)
+      .get('/api/articles/not-an-article/comments')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+});
+
