@@ -180,6 +180,25 @@ describe('POST api comments by article Id', () => {
       });
   });
 
+  test('POST:201 inserts a new comment even with extra properties in the request body', () => {
+    const newComment = {
+      author: 'butter_bridge',
+      body: 'Hello there Northcoders!',
+      extraProperty: 2,
+    };
+    return request(app)
+      .post('/api/articles/9/comments')
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.comment_id).toBe(19);
+        expect(comment.author).toBe('butter_bridge');
+        expect(comment.body).toBe('Hello there Northcoders!');
+        expect(comment.article_id).toBe(9);
+      });
+  });
+
   test('POST:400 responds with an appropriate status and error message when provided with a bad comment (no comment body)', () => {
     return request(app)
       .post('/api/articles/9/comments')
@@ -192,7 +211,35 @@ describe('POST api comments by article Id', () => {
       });
   });
 
-  test('POST:404 sends an appropriate status and error message when given a valid but non-existent user', () => {
+  test('POST:400 sends an appropriate status and error message when provided with invalid property types', () => {
+    const newComment = {
+      author: 123,
+      body: 'Hello there Northcoders!',
+    };
+    return request(app)
+      .post('/api/articles/9/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad user request');
+      });
+  });
+
+  test('POST:400 sends an appropriate status and error message when provided with invalid property types', () => {
+    const newComment = {
+      author: 'butter_bridge',
+      body: 123,
+    };
+    return request(app)
+      .post('/api/articles/9/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad body request');
+      });
+  });
+
+  test('POST:400 sends an appropriate status and error message when given a valid but non-existent user', () => {
     const newComment = {
       author: 'Esther',
       body: 'Hello there Northcoders!',
@@ -200,7 +247,7 @@ describe('POST api comments by article Id', () => {
     return request(app)
       .post('/api/articles/9/comments')
       .send(newComment)
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('user does not exist');
       });
@@ -226,7 +273,7 @@ describe('POST api comments by article Id', () => {
       body: 'Hello there Northcoders!',
     };
     return request(app)
-      .get('/api/articles/not-an-article/comments')
+      .post('/api/articles/not-an-article/comments')
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
@@ -236,31 +283,46 @@ describe('POST api comments by article Id', () => {
 });
 
 describe('PATCH api articles by Id', () => {
-  test('PATCH:201 updates the votes of an article in the db by its id when adding a positive number', () => {
+  test('PATCH:200 updates the votes of an article in the db by its id when adding a positive number', () => {
     const newVote = {
       inc_votes: 1,
     };
     return request(app)
       .patch('/api/articles/3')
       .send(newVote)
-      .expect(201)
+      .expect(200)
       .then(({ body }) => {
         const { article } = body;
         expect(article.votes).toBe(1);
       });
   });
 
-  test('PATCH:201 updates the votes of an article in the db by its id when adding a negative number', () => {
+  test('PATCH:200 updates the votes of an article in the db by its id when adding a negative number', () => {
     const newVote = {
       inc_votes: -100,
     };
     return request(app)
       .patch('/api/articles/3')
       .send(newVote)
-      .expect(201)
+      .expect(200)
       .then(({ body }) => {
         const { article } = body;
         expect(article.votes).toBe(-100);
+      });
+  });
+
+  test('PATCH:200 updates the votes of an article in the db by its id when adding a negative number', () => {
+    const newVote = {
+      inc_votes: 1,
+      extraProperty: 'This is an extra property',
+    };
+    return request(app)
+      .patch('/api/articles/3')
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.votes).toBe(1);
       });
   });
 
@@ -300,6 +362,19 @@ describe('PATCH api articles by Id', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('article does not exist');
+      });
+  });
+
+  test('PATCH:400 sends an appropriate status and error message when given an invalid id', () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch('/api/articles/not-an-article')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
       });
   });
 });
@@ -345,5 +420,39 @@ describe('GET api users', () => {
           });
         });
       });
+  });
+});
+
+describe('GET api articles queries', () => {
+  describe(('Topic query'), () => {
+    test('GET:200 sends an array of users that have the queried topic', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article.topic).toBe('mitch');
+        });
+      });
+    });
+    test('GET:404 sends an appropriate status and error message when given a non existing topic', () => {
+      return request(app)
+        .get('/api/articles?topic=banana')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('article does not exist');
+        });
+    });
+    // xtest('GET:400 sends an appropriate status and error message when given an invalid topic type', () => {
+    //   return request(app)
+    //     .get('/api/articles?topic=123')
+    //     .expect(400)
+    //     .then(({ body }) => {
+    //       expect(body.msg).toBe('Invalid input');
+    //     });
+    // });
   });
 });
