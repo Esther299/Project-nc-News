@@ -11,18 +11,37 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectAllArticles = () => {
-  return db
-    .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+exports.checkTopicExists = (topic) => {
+  return db.query(`SELECT * FROM articles WHERE topic = $1`, [topic]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({status:404, msg: 'article does not exist'})
+    }
+  })
+}
+
+exports.selectAllArticles = (topic) => {
+  let sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
         CAST(COUNT(comments.comment_id) AS INT) AS comment_count
         FROM articles 
-        LEFT JOIN comments ON articles.article_id = comments.article_id 
-        GROUP BY articles.article_id ORDER BY articles.created_at DESC; `
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+        LEFT JOIN comments ON articles.article_id = comments.article_id `;
+
+  let queryValues = [];
+
+  if (topic && typeof topic !== 'string') {
+    return Promise.reject({ status: 400, msg: 'Invalid input' });
+  }
+
+  if (topic && typeof topic === 'string') {
+    sqlQuery += 'WHERE topic = $1 ';
+    queryValues.push(topic);
+  }
+
+  sqlQuery +=
+    'GROUP BY articles.article_id ORDER BY articles.created_at DESC; ';
+
+  return db.query(sqlQuery, queryValues).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.checkArticleExists = (article_id) => {
@@ -50,6 +69,12 @@ exports.selectCommentByArticleId = (article_id) => {
 };
 
 exports.createCommentByArticleId = (article_id, author, body) => {
+  if (author && typeof author !== 'string') {
+    return Promise.reject({ status: 400, msg: 'Bad user request' });
+  }
+  if (body && typeof body !== 'string') {
+    return Promise.reject({ status: 400, msg: 'Bad body request' });
+  }
   return db
     .query(
       `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *`,

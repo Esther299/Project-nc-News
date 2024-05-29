@@ -16,7 +16,7 @@ articlesRouter.patch(`/:article_id`, patchVoteByArticleId);
 
 articlesRouter.use((err, req, res, next) => {
   if (err.code === '23503') {
-    res.status(404).send({ msg: 'user does not exist' });
+    res.status(400).send({ msg: 'user does not exist' });
   } else {
     next(err);
   }
