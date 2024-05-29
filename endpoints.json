@@ -43,7 +43,7 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves and array of comments with all the same aritcle id",
+    "description": "serves and array of comments from the same aritcle",
     "queries": [],
     "exampleResponse": {
       "comments": [
@@ -56,6 +56,21 @@
           "article_id": 1
         }
       ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a comment to a specific article",
+    "requestBody": {
+      "username": "string",
+      "body": "string"
+    },
+    "exampleResponse": {
+      "comment_id": 19,
+      "votes": 0,
+      "created_at": "2023-05-28T14:35:47Z",
+      "author": "butter_bridge",
+      "body": "Hello there Northcoders!",
+      "article_id": 9
     }
   }
 }

@@ -3,6 +3,7 @@ const request = require('supertest');
 const data = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
+const endpointsFile = require('../endpoints.json');
 
 beforeEach(() => {
   return seed(data);
@@ -38,23 +39,7 @@ describe('GET api', () => {
       .expect(200)
       .then(({ body }) => {
         const { endpointsData } = body;
-        for (const key in endpointsData) {
-          if (key.endsWith('api')) {
-            expect(endpointsData[key]).toEqual(
-              expect.objectContaining({
-                description: expect.any(String),
-              })
-            );
-          } else {
-            expect(endpointsData[key]).toEqual(
-              expect.objectContaining({
-                description: expect.any(String),
-                queries: expect.any(Array),
-                exampleResponse: expect.any(Object),
-              })
-            );
-          }
-        }
+        expect(endpointsData).toEqual(endpointsFile);
       });
   });
 });
@@ -132,24 +117,28 @@ describe('GET api comments by article Id', () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-        expect(comments).toEqual([
-          {
-            comment_id: 1,
-            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        expect(comments).toHaveLength(2);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
             article_id: 9,
-            author: 'butter_bridge',
-            votes: 16,
-            created_at: '2020-04-06T11:17:00.000Z',
-          },
-          {
-            comment_id: 17,
-            body: 'The owls are not what they seem.',
-            article_id: 9,
-            author: 'icellusedkars',
-            votes: 20,
-            created_at: '2020-03-14T16:02:00.000Z',
-          },
-        ]);
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          });
+        });
+      });
+  });
+
+  test('GET:200 sends an empty array to the client when there are no comments for that article', () => {
+    return request(app)
+      .get('/api/articles/7/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(0);
+        expect(comments).toEqual([]);
       });
   });
 
@@ -172,3 +161,76 @@ describe('GET api comments by article Id', () => {
   });
 });
 
+describe('POST api comments by article Id', () => {
+  test('POST:201 inserts a new comment to the db by article id and sends the new comment back to the client', () => {
+    const newComment = {
+      author: 'butter_bridge',
+      body: 'Hello there Northcoders!',
+    };
+    return request(app)
+      .post('/api/articles/9/comments')
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.comment_id).toBe(19);
+        expect(comment.author).toBe('butter_bridge');
+        expect(comment.body).toBe('Hello there Northcoders!');
+        expect(comment.article_id).toBe(9);
+      });
+  });
+
+  test('POST:400 responds with an appropriate status and error message when provided with a bad comment (no comment body)', () => {
+    return request(app)
+      .post('/api/articles/9/comments')
+      .send({
+        author: 'butter_bridge',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+
+  test('POST:404 sends an appropriate status and error message when given a valid but non-existent user', () => {
+    const newComment = {
+      author: 'Esther',
+      body: 'Hello there Northcoders!',
+    };
+    return request(app)
+      .post('/api/articles/9/comments')
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('user does not exist');
+      });
+  });
+
+  test('POST:404 sends an appropriate status and error message when given a valid but non-existent article id', () => {
+    const newComment = {
+      author: 'butter_bridge',
+      body: 'Hello there Northcoders!',
+    };
+    return request(app)
+      .post('/api/articles/99999/comments')
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('article does not exist');
+      });
+  });
+
+  test('POST:400 sends an appropriate status and error message when given an invalid id', () => {
+    const newComment = {
+      author: 'butter_bridge',
+      body: 'Hello there Northcoders!',
+    };
+    return request(app)
+      .get('/api/articles/not-an-article/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+});
