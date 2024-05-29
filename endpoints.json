@@ -72,5 +72,15 @@
       "body": "Hello there Northcoders!",
       "article_id": 9
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the vote count of an specific article",
+    "requestBody": { "inc_votes": "number" },
+    "exampleResponse": {
+      "article_id": 3,
+      "title": "icellusedkars",
+      "body": "some gifs",
+      "votes": 1
+    }
   }
 }

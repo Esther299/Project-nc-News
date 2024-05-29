@@ -241,7 +241,7 @@ describe('PATCH api articles by Id', () => {
       inc_votes: 1,
     };
     return request(app)
-      .patch('/api/articles/2')
+      .patch('/api/articles/3')
       .send(newVote)
       .expect(201)
       .then(({ body }) => {
@@ -255,7 +255,7 @@ describe('PATCH api articles by Id', () => {
       inc_votes: -100,
     };
     return request(app)
-      .patch('/api/articles/2')
+      .patch('/api/articles/3')
       .send(newVote)
       .expect(201)
       .then(({ body }) => {
@@ -269,7 +269,7 @@ describe('PATCH api articles by Id', () => {
       votes: 1,
     };
     return request(app)
-      .patch('/api/articles/2')
+      .patch('/api/articles/3')
       .send(newVote)
       .expect(400)
       .then(({ body }) => {
@@ -282,7 +282,7 @@ describe('PATCH api articles by Id', () => {
       inc_votes: 'banana',
     };
     return request(app)
-      .patch('/api/articles/2')
+      .patch('/api/articles/3')
       .send(newVote)
       .expect(400)
       .then(({ body }) => {
