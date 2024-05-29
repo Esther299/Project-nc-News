@@ -82,5 +82,8 @@
       "body": "some gifs",
       "votes": 1
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a specific comment"
   }
 }
