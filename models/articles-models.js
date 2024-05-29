@@ -36,7 +36,7 @@ exports.checkArticleExists = (article_id) => {
         });
       }
     });
-}
+};
 
 exports.selectCommentByArticleId = (article_id) => {
   return db
@@ -49,8 +49,7 @@ exports.selectCommentByArticleId = (article_id) => {
     });
 };
 
-
-exports.createCommentByArticleId = (article_id, author, body ) => {
+exports.createCommentByArticleId = (article_id, author, body) => {
   return db
     .query(
       `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *`,
@@ -61,3 +60,14 @@ exports.createCommentByArticleId = (article_id, author, body ) => {
     });
 };
 
+exports.updateVotesByArticleId = (article_id, newVote) => {
+  const { inc_votes } = newVote;
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+      [inc_votes, article_id]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

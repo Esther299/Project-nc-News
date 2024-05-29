@@ -234,3 +234,72 @@ describe('POST api comments by article Id', () => {
       });
   });
 });
+
+describe('PATCH api articles by Id', () => {
+  test('PATCH:201 updates the votes of an article in the db by its id when adding a positive number', () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch('/api/articles/2')
+      .send(newVote)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.votes).toBe(1);
+      });
+  });
+
+  test('PATCH:201 updates the votes of an article in the db by its id when adding a negative number', () => {
+    const newVote = {
+      inc_votes: -100,
+    };
+    return request(app)
+      .patch('/api/articles/2')
+      .send(newVote)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.votes).toBe(-100);
+      });
+  });
+
+  test('PATCH:400 responds with an appropriate status and error message when the provided vote property is incorrect', () => {
+    const newVote = {
+      votes: 1,
+    };
+    return request(app)
+      .patch('/api/articles/2')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+
+  test('PATCH:400 responds with an appropriate status and error message when the provided vote type value is incorrect', () => {
+    const newVote = {
+      inc_votes: 'banana',
+    };
+    return request(app)
+      .patch('/api/articles/2')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+
+  test('PATCH:404 sends an appropriate status and error message when given a valid but non-existent article id', () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch('/api/articles/99999')
+      .send(newVote)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('article does not exist');
+      });
+  });
+});
