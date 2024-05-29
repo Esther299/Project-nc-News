@@ -85,5 +85,18 @@
   },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes a specific comment"
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "string",
+          "name": "string",
+          "avatar_url": "string"
+        }
+      ]
+    }
   }
 }

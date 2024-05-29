@@ -304,7 +304,6 @@ describe('PATCH api articles by Id', () => {
   });
 });
 
-
 describe('DELETE api comments by Id', () => {
   test('DELETE:204 deletes the specified comment and sends no body back', () => {
     return request(app).delete('/api/comments/3').expect(204);
@@ -325,6 +324,26 @@ describe('DELETE api comments by Id', () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Invalid input');
+      });
+  });
+});
+
+describe('GET api users', () => {
+  test('GET:200 sends an array of users to the client, each of which should have the properties of username, name and avatar_url', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(Array.isArray(users)).toBe(true);
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
       });
   });
 });
