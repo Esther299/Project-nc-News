@@ -51,17 +51,19 @@ describe('GET api articles by article Id', () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article).toEqual({
-          article_id: 3,
-          title: 'Eight pug gifs that remind me of mitch',
-          body: 'some gifs',
-          author: 'icellusedkars',
-          topic: 'mitch',
-          created_at: '2020-11-03T08:12:00.000Z',
-          votes: 0,
-          article_img_url:
-            'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-        });
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 3,
+            title: 'Eight pug gifs that remind me of mitch',
+            body: 'some gifs',
+            author: 'icellusedkars',
+            topic: 'mitch',
+            created_at: '2020-11-03T08:12:00.000Z',
+            votes: 0,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+          })
+        );
       });
   });
 
@@ -425,7 +427,7 @@ describe('GET api users', () => {
 
 describe('GET api articles queries', () => {
   describe('Topic query', () => {
-    test('GET:200 sends an array of users that have the queried topic', () => {
+    test('GET:200 sends an array of articles queried by topic', () => {
       return request(app)
         .get('/api/articles?topic=mitch')
         .expect(200)
@@ -447,4 +449,18 @@ describe('GET api articles queries', () => {
         });
     });
   });
+  describe(('Comment_count query by Id'), () => {
+  test('GET:200 sends an that adds the comment_count when queried', () => {
+    return request(app)
+      .get('/api/articles/1')
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+          expect(article.comment_count).toBe(11);
+      });
+  });
+  });
 });
+
+
+
