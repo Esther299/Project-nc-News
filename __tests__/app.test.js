@@ -437,7 +437,29 @@ describe('GET api articles queries', () => {
           expect(articles).toHaveLength(12);
           articles.forEach((article) => {
             expect(article.topic).toBe('mitch');
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            });
+            expect(article).not.toHaveProperty('body');
           });
+        });
+    });
+    test('GET:200 sends an array of articles queried by topic', () => {
+      return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(Array.isArray(articles)).toBe(true);
+          expect(articles).toHaveLength(0);
+          expect(articles).toEqual([]);
         });
     });
     test('GET:404 sends an appropriate status and error message when given a non existing topic', () => {
@@ -445,7 +467,7 @@ describe('GET api articles queries', () => {
         .get('/api/articles?topic=banana')
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe('article does not exist');
+          expect(body.msg).toBe('topic does not exist');
         });
     });
   });

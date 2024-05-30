@@ -5,8 +5,8 @@ const {
   selectCommentByArticleId,
   createCommentByArticleId,
   updateVotesByArticleId,
-  checkTopicExists,
 } = require('../models/articles-models');
+const { checkTopicExists } = require('../models/topics-models')
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;

@@ -21,14 +21,6 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.checkTopicExists = (topic) => {
-  return db.query(`SELECT * FROM articles WHERE topic = $1`, [topic]).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({status:404, msg: 'article does not exist'})
-    }
-  })
-}
-
 exports.selectAllArticles = (topic) => {
   let sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
         CAST(COUNT(comments.comment_id) AS INT) AS comment_count
