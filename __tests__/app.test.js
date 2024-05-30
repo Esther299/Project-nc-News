@@ -424,19 +424,19 @@ describe('GET api users', () => {
 });
 
 describe('GET api articles queries', () => {
-  describe(('Topic query'), () => {
+  describe('Topic query', () => {
     test('GET:200 sends an array of users that have the queried topic', () => {
-    return request(app)
-      .get('/api/articles?topic=mitch')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(Array.isArray(articles)).toBe(true);
-        expect(articles).toHaveLength(12);
-        articles.forEach((article) => {
-          expect(article.topic).toBe('mitch');
+      return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(Array.isArray(articles)).toBe(true);
+          expect(articles).toHaveLength(12);
+          articles.forEach((article) => {
+            expect(article.topic).toBe('mitch');
+          });
         });
-      });
     });
     test('GET:404 sends an appropriate status and error message when given a non existing topic', () => {
       return request(app)
@@ -446,13 +446,5 @@ describe('GET api articles queries', () => {
           expect(body.msg).toBe('article does not exist');
         });
     });
-    // xtest('GET:400 sends an appropriate status and error message when given an invalid topic type', () => {
-    //   return request(app)
-    //     .get('/api/articles?topic=123')
-    //     .expect(400)
-    //     .then(({ body }) => {
-    //       expect(body.msg).toBe('Invalid input');
-    //     });
-    // });
   });
 });

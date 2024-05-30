@@ -27,11 +27,7 @@ exports.selectAllArticles = (topic) => {
 
   let queryValues = [];
 
-  if (topic && typeof topic !== 'string') {
-    return Promise.reject({ status: 400, msg: 'Invalid input' });
-  }
-
-  if (topic && typeof topic === 'string') {
+  if (topic) {
     sqlQuery += 'WHERE topic = $1 ';
     queryValues.push(topic);
   }
