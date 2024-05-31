@@ -1,30 +1,36 @@
 # Northcoders News API
 
-This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/).
-
+This portfolio project was created as part of a Digital Skills Bootcamp in
+Software Engineering provided by [Northcoders](https://northcoders.com/).
 
 ## Introduction
 
-Northcoders News API is a mimic of building a real-world backend service that provides information to the front-end architecture.
+Northcoders News API is a backend service that provides information to the front-end architecture, mimicking a real-world backend service. To see the API in action, visit: https://project-nc-news-8dvh.onrender.com/
 
-
-
-## Features
+#### Features
 
 - Get a list of topics
 - Get a list of available endpoints
-- Get a single article by article_id
+- Get a single article by `article_id`
 - Get a list of articles
-- Get a list of comments by article_id
-- Post a comment by article_id
-- Patch an article by article_id
-- Delete a comment by comment_id
+- Get a list of comments by `article_id`
+- Post a comment by `article_id`
+- Patch an article by `article_id`
+- Delete a comment by `comment_id`
 - Get a list of users
 - Allow articles to be filtered and sorted
 - Add a comment count to the response when retrieving a single article
 
+## Getting Started
 
-## Installation
+### Prerequisites
+
+Ensure you have the following installed on your local machine:
+
+Node.js: Minimum version v21.6.2
+PostgreSQL: Minimum version 15.6 (Ubuntu 15.6-0ubuntu0.23.10.1)
+
+### Installation
 
 1. Clone the repo:
 
@@ -32,12 +38,54 @@ Northcoders News API is a mimic of building a real-world backend service that pr
    git clone https://github.com/Esther299/Project-nc-News
    cd be-ns-news
    ```
-2. Set-up environment variables:
+
+2. Install dependencies:
+
+   ```sh
+   npm install
+   ```
+
+3. Set up environment variables:
+
+      1. Create the environment files in the root of your project directory:
+            - `.env.development`
+            - `.env.test`
+            - `.env.production`
+            
+      2. Add the necessary environment variables to each file:
+         - In `.env.development`:
+         ```sh
+         PGDATABASE=nc_news
+         ```
+         - In `.env.test`:
+         ```sh
+         PGDATABASE=nc_news_test
+         ```
+         - In `.env.production`:
+         ```sh
+         DATABASE_URL=postgres://postgres.ifgfhosmqwdupnieigze:FirstProjectMay2024@aws-0-eu-west-2.pooler.supabase.com:5432/postgres
+         ```
+                  
+4. Set up the database:
+
+   ```sh
+   npm run setup-dbs
+   npm run seed
+   ```
+
+#### Running the Application
 
     ```sh
-    1st: Create the environment files in the root of your project directory:
-        .env.development
-        .env.test
-    2nd: Add the necessary environment variables to each file: 
-        In .env.development ---> PGDATABASE=nc_news
-        In .env.test ---> PGDATABASE=nc_news_test
+    npm run start
+    ```
+
+#### Running Tests
+
+    ```sh
+    npm run test
+    ```
+This will run the test suite and output the results.
+
+## Contact
+
+For any questions or issues, please contact Esther at esthergc_2@hotmail.com.
