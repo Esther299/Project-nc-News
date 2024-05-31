@@ -27,8 +27,8 @@ Northcoders News API is a backend service that provides information to the front
 
 Ensure you have the following installed on your local machine:
 
-Node.js: Minimum version v21.6.2
-PostgreSQL: Minimum version 15.6 (Ubuntu 15.6-0ubuntu0.23.10.1)
+- Node.js: Minimum version v21.6.2
+- PostgreSQL: Minimum version 15.6 (Ubuntu 15.6-0ubuntu0.23.10.1)
 
 ### Installation
 
@@ -73,18 +73,21 @@ PostgreSQL: Minimum version 15.6 (Ubuntu 15.6-0ubuntu0.23.10.1)
    npm run seed
    ```
 
-#### Running the Application
+### Running the Application
 
-    ```sh
-    npm run start
-    ```
+This command will run the aplication:
+
+```
+npm run start
+```
 
 #### Running Tests
 
-    ```sh
-    npm run test
-    ```
-This will run the test suite and output the results.
+This command will run the test suite and output the results:
+
+```
+npm run test
+```
 
 ## Contact
 
