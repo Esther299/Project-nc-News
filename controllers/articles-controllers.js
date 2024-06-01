@@ -6,7 +6,7 @@ const {
   createCommentByArticleId,
   updateVotesByArticleId,
 } = require('../models/articles-models');
-const { checkTopicExists } = require('../models/topics-models')
+const { checkTopicExists } = require('../models/topics-models');
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -20,16 +20,9 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { topic } = req.query;
-
-  const promises = [selectAllArticles(topic)];
-
-  if (topic) {
-    promises.push(checkTopicExists(topic));
-  }
-  Promise.all(promises)
-    .then((result) => {
-      const articles = result[0];
+  const { topic, sort_by, order_by } = req.query;
+  selectAllArticles(topic, sort_by, order_by)
+    .then((articles) => {
       res.status(200).send({ articles });
     })
     .catch((err) => {

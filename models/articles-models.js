@@ -17,25 +17,71 @@ exports.selectArticleById = (article_id) => {
           msg: 'article does not exist',
         });
       }
-      return rows[0]
+      return rows[0];
     });
 };
 
-exports.selectAllArticles = (topic) => {
-  let sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
-        CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+exports.selectAllArticles = (topic, sort_by, order_by) => {
+  let sqlQuery = `
+        SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+               CAST(COUNT(comments.comment_id) AS INT) AS comment_count
         FROM articles 
-        LEFT JOIN comments ON articles.article_id = comments.article_id `;
+        LEFT JOIN comments ON articles.article_id = comments.article_id 
+    `;
 
   let queryValues = [];
+  const validSortBy = [
+    'title',
+    'topic',
+    'author',
+    'created_at',
+    'votes',
+    'article_img_url',
+    'comment_count',
+  ];
+  const validOrderBy = ['ASC', 'DESC'];
+  const validTopic = ['mitch', 'cats', 'paper'];
+
+  let sortBy = 'created_at';
+  let orderBy = 'DESC';
+
+  if (topic && !validTopic.includes(topic)) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad query request',
+    });
+  }
 
   if (topic) {
-    sqlQuery += 'WHERE topic = $1 ';
+    sqlQuery += 'WHERE articles.topic = $1 ';
     queryValues.push(topic);
   }
 
-  sqlQuery +=
-    'GROUP BY articles.article_id ORDER BY articles.created_at DESC; ';
+  if (sort_by && !validSortBy.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad query request',
+    });
+  }
+
+  if (sort_by) {
+    sortBy = sort_by;
+  }
+
+  if (order_by && !validOrderBy.includes(order_by.toUpperCase())) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad query request',
+    });
+  }
+
+  if (order_by) {
+    orderBy = order_by.toUpperCase();
+  }
+
+  sqlQuery += `GROUP BY articles.article_id `;
+  sqlQuery += `ORDER BY ${sortBy} ${orderBy} `;
+  sqlQuery += ';';
 
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
     return rows;

@@ -201,7 +201,7 @@ describe('POST api comments by article Id', () => {
       });
   });
 
-  test('POST:400 responds with an appropriate status and error message when provided with a bad comment (no comment body)', () => {
+  test('POST:400 sends an appropriate status and error message when provided with a bad comment (no comment body)', () => {
     return request(app)
       .post('/api/articles/9/comments')
       .send({
@@ -328,7 +328,7 @@ describe('PATCH api articles by Id', () => {
       });
   });
 
-  test('PATCH:400 responds with an appropriate status and error message when the provided vote property is incorrect', () => {
+  test('PATCH:400 sends an appropriate status and error message when the provided vote property is incorrect', () => {
     const newVote = {
       votes: 1,
     };
@@ -341,7 +341,7 @@ describe('PATCH api articles by Id', () => {
       });
   });
 
-  test('PATCH:400 responds with an appropriate status and error message when the provided vote type value is incorrect', () => {
+  test('PATCH:400 sends an appropriate status and error message when the provided vote type value is incorrect', () => {
     const newVote = {
       inc_votes: 'banana',
     };
@@ -462,27 +462,103 @@ describe('GET api articles queries', () => {
           expect(articles).toEqual([]);
         });
     });
-    test('GET:404 sends an appropriate status and error message when given a non existing topic', () => {
+    test('GET:400 sends an appropriate status and error message when given a non existing topic', () => {
       return request(app)
         .get('/api/articles?topic=banana')
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe('topic does not exist');
+          expect(body.msg).toBe('Bad query request');
         });
     });
   });
-  describe(('Comment_count query by Id'), () => {
-  test('GET:200 sends an that adds the comment_count when queried', () => {
-    return request(app)
-      .get('/api/articles/1')
-      .expect(200)
-      .then(({ body }) => {
-        const { article } = body;
+  describe('Comment_count query by Id', () => {
+    test('GET:200 sends an that adds the comment_count when queried', () => {
+      return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
           expect(article.comment_count).toBe(11);
-      });
-  });
+        });
+    });
   });
 });
 
+describe('GET api articles sort queries', () => {
+  describe('Sort by', () => {
+    test('GET:200 defaults to sort by created_at', () => {
+      return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toHaveLength(13);
+          expect(articles).toBeSortedBy('created_at', { descending: true });
+        });
+    });
 
+    test('GET:200 sends an array of articles sorted by any valid column', () => {
+      const validColumns = [
+        'title',
+        'topic',
+        'author',
+        'body',
+        'created_at',
+        'article_img_url',
+        'comment_count',
+      ];
+      for (const validColumn of validColumns) {
+        return request(app)
+          .get(`/api/articles?sort_by=${validColumn}`)
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toHaveLength(13);
+            expect(articles).toBeSortedBy(validColumn, { descending: true });
+          });
+      }
+    });
 
+    test('GET:400 sends a message of "Bad query request" when passed an invalid sort by query', () => {
+      return request(app)
+        .get('/api/articles?sort_by=banana')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad query request');
+        });
+    });
+  });
+
+  describe('Order by', () => {
+    test('GET:200 defaults to order by descending', () => {
+      return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toHaveLength(13);
+          expect(articles).toBeSorted({ descending: true });
+        });
+    });
+
+    test('GET:200 sends an array of articles ordered by the passed query', () => {
+      return request(app)
+        .get('/api/articles?order_by=asc')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toHaveLength(13);
+          expect(articles).toBeSorted({ ascending: true });
+        });
+    });
+
+    test('GET:400 sends a message of "Bad query request" when passed an invalid order by query', () => {
+      return request(app)
+        .get('/api/articles?order_by=banana')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad query request');
+        });
+    });
+  });
+});
