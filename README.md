@@ -63,7 +63,7 @@ Ensure you have the following installed on your local machine:
          ```
          - In `.env.production`:
          ```sh
-         DATABASE_URL=postgres://postgres.ifgfhosmqwdupnieigze:FirstProjectMay2024@aws-0-eu-west-2.pooler.supabase.com:5432/postgres
+         DATABASE_URL=postgres://postgres.ifgfhosmqwdupnieigze:******************@aws-0-eu-west-2.pooler.supabase.com:5432/postgres
          ```
                   
 4. Set up the database:

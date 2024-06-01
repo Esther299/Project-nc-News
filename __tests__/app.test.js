@@ -451,7 +451,7 @@ describe('GET api articles queries', () => {
           });
         });
     });
-    test('GET:200 sends an array of articles queried by topic', () => {
+    test('GET:200 sends an empty array when there are no articles with that topic', () => {
       return request(app)
         .get('/api/articles?topic=paper')
         .expect(200)
@@ -560,5 +560,33 @@ describe('GET api articles sort queries', () => {
           expect(body.msg).toBe('Bad query request');
         });
     });
+  });
+});
+
+describe('GET api users by username', () => {
+  test('GET:200 sends a single user to the client', () => {
+    return request(app)
+      .get('/api/users/rogersop')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toEqual(
+          expect.objectContaining({
+            username: 'rogersop',
+            name: 'paul',
+            avatar_url:
+              'https://avatars2.githubusercontent.com/u/24394918?s=400&v=4',
+          })
+        );
+      });
+  });
+
+  test('GET:404 sends an appropriate status and error message when given a valid but non-existent username', () => {
+    return request(app)
+      .get('/api/users/not-a-user')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('User not found');
+      });
   });
 });

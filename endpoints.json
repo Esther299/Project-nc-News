@@ -1,16 +1,16 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "Serves up a json representation of all the available endpoints of the api"
   },
   "GET /api/topics": {
-    "description": "serves an array of all topics",
+    "description": "Serves an array of all topics",
     "queries": [],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "Serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
@@ -27,7 +27,7 @@
     }
   },
   "GET /api/articles/:article_id": {
-    "description": "serves an object of an article searched by its id",
+    "description": "Serves an object of an article searched by its id",
     "queries": [],
     "exampleResponse": {
       "article": {
@@ -43,7 +43,7 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves and array of comments from the same aritcle",
+    "description": "Serves and array of comments from the same aritcle",
     "queries": [],
     "exampleResponse": {
       "comments": [
@@ -59,7 +59,7 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "adds a comment to a specific article",
+    "description": "Adds a comment to a specific article",
     "requestBody": {
       "username": "string",
       "body": "string"
@@ -74,7 +74,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "updates the vote count of an specific article",
+    "description": "Updates the vote count of an specific article",
     "requestBody": { "inc_votes": "number" },
     "exampleResponse": {
       "article_id": 3,
@@ -87,7 +87,7 @@
     "description": "Deletes a specific comment"
   },
   "GET /api/users": {
-    "description": "serves an array of all users",
+    "description": "Serves an array of all users",
     "queries": [],
     "exampleResponse": {
       "users": [
@@ -97,6 +97,17 @@
           "avatar_url": "string"
         }
       ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "Serves a user object by username",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
     }
   }
 }
