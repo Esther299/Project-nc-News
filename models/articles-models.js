@@ -40,17 +40,17 @@ exports.selectAllArticles = (topic, sort_by, order_by) => {
     'comment_count',
   ];
   const validOrderBy = ['ASC', 'DESC'];
-  const validTopic = ['mitch', 'cats', 'paper'];
+
 
   let sortBy = 'created_at';
   let orderBy = 'DESC';
 
-  if (topic && !validTopic.includes(topic)) {
-    return Promise.reject({
-      status: 400,
-      msg: 'Bad query request',
-    });
-  }
+  // if (topic && !validTopic.includes(topic)) {
+  //   return Promise.reject({
+  //     status: 400,
+  //     msg: 'Bad query request',
+  //   });
+  // }
 
   if (topic) {
     sqlQuery += 'WHERE articles.topic = $1 ';

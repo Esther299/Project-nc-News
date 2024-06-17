@@ -462,14 +462,14 @@ describe('GET api articles queries', () => {
           expect(articles).toEqual([]);
         });
     });
-    test('GET:400 sends an appropriate status and error message when given a non existing topic', () => {
-      return request(app)
-        .get('/api/articles?topic=banana')
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Bad query request');
-        });
-    });
+    // test('GET:400 sends an appropriate status and error message when given a non existing topic', () => {
+    //   return request(app)
+    //     .get('/api/articles?topic=banana')
+    //     .expect(400)
+    //     .then(({ body }) => {
+    //       expect(body.msg).toBe('Bad query request');
+    //     });
+    // });
   });
   describe('Comment_count query by Id', () => {
     test('GET:200 sends an that adds the comment_count when queried', () => {
