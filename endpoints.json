@@ -9,6 +9,19 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "Adds a new topic",
+    "requestBody": {
+      "slug": "string",
+      "description": "string"
+    },
+    "exampleResponse": {
+      "topic": {
+        "slug": "new_topic",
+        "description": "Description of the new topic."
+      }
+    }
+  },
   "GET /api/articles": {
     "description": "Serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
@@ -26,6 +39,26 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "Adds a new article",
+    "requestBody": {
+      "title": "string",
+      "body": "string",
+      "author": "string",
+      "topic": "string"
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "New Article",
+        "body": "This is the body of the new article.",
+        "author": "new_author",
+        "topic": "new_topic",
+        "created_at": "2023-06-21T12:00:00Z",
+        "votes": 0
+      }
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "Serves an object of an article searched by its id",
     "queries": [],
@@ -41,6 +74,10 @@
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes a specific article",
+    "exampleResponse": {}
   },
   "GET /api/articles/:article_id/comments": {
     "description": "Serves and array of comments from the same aritcle",
@@ -84,7 +121,8 @@
     }
   },
   "DELETE /api/comments/:comment_id": {
-    "description": "Deletes a specific comment"
+    "description": "Deletes a specific comment",
+    "exampleResponse": {}
   },
   "GET /api/users": {
     "description": "Serves an array of all users",
