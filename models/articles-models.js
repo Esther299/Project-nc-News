@@ -41,10 +41,8 @@ exports.selectAllArticles = (topic, sort_by, order_by) => {
   ];
   const validOrderBy = ['ASC', 'DESC'];
 
-
   let sortBy = 'created_at';
   let orderBy = 'DESC';
-
 
   if (topic) {
     sqlQuery += 'WHERE articles.topic = $1 ';
@@ -115,7 +113,7 @@ exports.createCommentByArticleId = (article_id, author, body) => {
   }
   return db
     .query(
-      `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *`,
+      `INSERT INTO comments (body, author, article_id, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *`,
       [body, author, article_id]
     )
     .then(({ rows }) => {
@@ -133,4 +131,28 @@ exports.updateVotesByArticleId = (article_id, newVote) => {
     .then(({ rows }) => {
       return rows[0];
     });
+};
+
+exports.createArticle = (author, title, body, topic, article_img_url) => {
+  console.log(author, title, body, topic, article_img_url);
+  if (author && typeof author !== 'string') {
+    return Promise.reject({ status: 400, msg: 'Bad user request' });
+  }
+  if (
+    (body && typeof body !== 'string') ||
+    (title && typeof title !== 'string') ||
+    (topic && typeof topic !== 'string') ||
+    (article_img_url && typeof article_img_url !== 'string')
+  ) {
+    return Promise.reject({ status: 400, msg: 'Bad article request' });
+  }
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *`,
+      [author, title, body, topic, article_img_url]
+    )
+    .then((result) => {
+      console.log(result);
+      return result.rows[0];
+    })
 };

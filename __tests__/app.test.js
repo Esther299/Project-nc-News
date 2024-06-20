@@ -466,7 +466,7 @@ describe('GET api articles queries', () => {
   });
 
   describe('Comment_count query by Id', () => {
-    test('GET:200 sends an that adds the comment_count when queried', () => {
+    test('GET:200 sends an article with the comment_count included', () => {
       return request(app)
         .get('/api/articles/1')
         .expect(200)
@@ -683,3 +683,133 @@ describe('PATCH api comments by Id', () => {
   });
 });
 
+describe('POST /api/articles', () => {
+  test('POST:201 inserts a new article to the db and sends the new article back to the client', () => {
+    const newArticle = {
+      author: 'icellusedkars',
+      title: 'Test Article',
+      body: 'This is a test article body.',
+      topic: 'mitch',
+      article_img_url: 'https://example.com/test_image.jpg',
+    };
+    return request(app)
+      .post('/api/articles/')
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.article_id).toBe(14);
+        expect(article.author).toBe('icellusedkars');
+        expect(article.title).toBe('Test Article');
+        expect(article.body).toBe('This is a test article body.');
+        expect(article.topic).toBe('mitch');
+        expect(article.article_img_url).toBe(
+          'https://example.com/test_image.jpg'
+        );
+      });
+  });
+  test('POST:201 inserts a new article even with extra properties in the request body', () => {
+    const newArticle = {
+      author: 'icellusedkars',
+      title: 'Test Article',
+      body: 'This is a test article body.',
+      topic: 'mitch',
+      article_img_url: 'https://example.com/test_image.jpg',
+      extraProperty: 2,
+    };
+    return request(app)
+      .post('/api/articles/')
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.article_id).toBe(14);
+        expect(article.author).toBe('icellusedkars');
+        expect(article.title).toBe('Test Article');
+        expect(article.body).toBe('This is a test article body.');
+        expect(article.topic).toBe('mitch');
+        expect(article.article_img_url).toBe(
+          'https://example.com/test_image.jpg'
+        );
+      });
+  });
+  test('POST:400 sends an appropriate status and error message when provided with a bad article (no article body)', () => {
+    return request(app)
+      .post('/api/articles/')
+      .send({
+        author: 'icellusedkars',
+        topic: 'mitch',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('POST:400 sends an appropriate status and error message when provided with invalid user type', () => {
+    const newArticle = {
+      author: 123,
+      title: 'Test Article',
+      body: 'This is a test article body.',
+      topic: 'mitch',
+      article_img_url: 'https://example.com/test_image.jpg',
+      extraProperty: 2,
+    };
+    return request(app)
+      .post('/api/articles/')
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad user request');
+      });
+  });
+  test('POST:400 sends an appropriate status and error message when provided with invalid property types', () => {
+    const newArticle = {
+      author: 'icellusedkars',
+      title: 'Test Article',
+      body: 123,
+      topic: 'mitch',
+      article_img_url: 'https://example.com/test_image.jpg',
+      extraProperty: 2,
+    };
+    return request(app)
+      .post('/api/articles/')
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad article request');
+      });
+  });
+  test('POST:400 sends an appropriate status and error message when given a valid but non-existent user', () => {
+    const newArticle = {
+      author: 'Esther',
+      title: 'Test Article',
+      body: 'This is a test article body.',
+      topic: 'mitch',
+      article_img_url: 'https://example.com/test_image.jpg',
+      extraProperty: 2,
+    };
+    return request(app)
+      .post('/api/articles/')
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('user does not exist');
+      });
+  });
+  test('POST:404 sends an appropriate status and error message when provided with invalid topic ', () => {
+    const newArticle = {
+      author: 'icellusedkars',
+      title: 'Test Article',
+      body: 'This is a test article body.',
+      topic: 'hello',
+      article_img_url: 'https://example.com/test_image.jpg',
+    };
+    return request(app)
+      .post('/api/articles/')
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('topic does not exist');
+      });
+  });
+});

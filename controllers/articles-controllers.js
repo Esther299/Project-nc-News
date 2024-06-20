@@ -5,6 +5,7 @@ const {
   selectCommentByArticleId,
   createCommentByArticleId,
   updateVotesByArticleId,
+  createArticle,
 } = require('../models/articles-models');
 const { checkTopicExists } = require('../models/topics-models');
 
@@ -74,6 +75,22 @@ exports.patchVoteByArticleId = (req, res, next) => {
     })
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticle = (req, res, next) => {
+  const { author, title, body, topic, article_img_url } = req.body;
+  console.log(req.body)
+  const imageUrl = article_img_url || 'https://picsum.photos/200/300?grayscale';
+  checkTopicExists(topic)
+    .then(() => {
+      return createArticle(author, title, body, topic, imageUrl);
+    })
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch((err) => {
       next(err);
