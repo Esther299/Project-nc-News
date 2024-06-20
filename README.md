@@ -9,15 +9,20 @@ Northcoders News API is a backend service that provides information to the front
 
 #### Features
 
-- Get a list of topics
 - Get a list of available endpoints
-- Get a single article by `article_id`
+- Get a list of topics
 - Get a list of articles
+- Get a list of users
+- Get a single article by `article_id`
 - Get a list of comments by `article_id`
 - Post a comment by `article_id`
+- Post an article
+- Post a new topic
 - Patch an article by `article_id`
+- Patch a comment by `comment_id`
+- Delete an article by `article_id`
 - Delete a comment by `comment_id`
-- Get a list of users
+- Add `comment_count` to the list of articles
 - Allow articles to be filtered and sorted
 - Add a comment count to the response when retrieving a single article
 
