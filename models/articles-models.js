@@ -118,15 +118,28 @@ exports.checkArticleExists = (article_id) => {
     });
 };
 
-exports.selectCommentByArticleId = (article_id) => {
-  return db
-    .query(
-      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
-      [article_id]
-    )
-    .then(({ rows }) => {
-      return rows;
+exports.selectCommentByArticleId = (article_id, limit=10, p=1) => {
+  const page = p ? parseInt(p) : 1;
+  const offset = limit * (page - 1);
+
+  if (isNaN(limit) || limit <= 0 || isNaN(page) || page <= 0) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad query request',
     });
+  }
+  const sqlQuery = `
+    SELECT * 
+    FROM comments 
+    WHERE article_id = $1 
+    ORDER BY created_at DESC
+    LIMIT $2 
+    OFFSET $3
+  `;
+
+  return db.query(sqlQuery, [article_id, limit, offset]).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.createCommentByArticleId = (article_id, author, body) => {

@@ -846,3 +846,40 @@ describe('GET /api/articles pagination', () => {
       });
   });
 });
+
+
+
+
+describe('GET /api/articles/:article_id/comments pagination', () => {
+  test('GET:200 sends an array of comments with default limit 10', async () => {
+    const response = await request(app)
+      .get('/api/articles/1/comments') // Replace '1' with a valid article_id
+      .expect(200);
+
+    expect(response.body).toHaveProperty('comments');
+    expect(Array.isArray(response.body.comments)).toBe(true);
+    expect(response.body.comments.length).toBe(10); // Assuming default limit is 10
+  });
+
+  test('GET:200 sends an array of comments with custom limit and page', async () => {
+    const response = await request(app)
+      .get('/api/articles/1/comments?limit=5&p=2') // Replace '1' with a valid article_id
+      .expect(200);
+
+    expect(response.body).toHaveProperty('comments');
+    expect(Array.isArray(response.body.comments)).toBe(true);
+    expect(response.body.comments.length).toBe(5); // Assuming 5 comments per page
+  });
+
+  test('GET:400 sends "Bad query request" when passed invalid limit or page', async () => {
+    await request(app)
+      .get('/api/articles/1/comments?limit=-10') // Replace '1' with a valid article_id
+      .expect(400, { msg: 'Bad query request' });
+
+    await request(app)
+      .get('/api/articles/1/comments?p=0') // Replace '1' with a valid article_id
+      .expect(400, { msg: 'Bad query request' });
+  });
+
+  // Add more tests as needed for sorting, error handling, etc.
+});

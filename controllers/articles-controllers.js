@@ -33,8 +33,9 @@ exports.getArticles = (req, res, next) => {
 
 exports.getCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
+  const { limit, p } = req.query;
 
-  const promises = [selectCommentByArticleId(article_id)];
+  const promises = [selectCommentByArticleId(article_id, limit, p)];
 
   if (article_id) {
     promises.push(checkArticleExists(article_id));
