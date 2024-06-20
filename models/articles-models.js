@@ -134,7 +134,6 @@ exports.updateVotesByArticleId = (article_id, newVote) => {
 };
 
 exports.createArticle = (author, title, body, topic, article_img_url) => {
-  console.log(author, title, body, topic, article_img_url);
   if (author && typeof author !== 'string') {
     return Promise.reject({ status: 400, msg: 'Bad user request' });
   }
@@ -152,7 +151,6 @@ exports.createArticle = (author, title, body, topic, article_img_url) => {
       [author, title, body, topic, article_img_url]
     )
     .then((result) => {
-      console.log(result);
       return result.rows[0];
-    })
+    });
 };

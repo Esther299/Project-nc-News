@@ -15,3 +15,20 @@ exports.checkTopicExists = (topic) => {
       }
     });
 };
+
+exports.createTopic = (slug, description) => {
+  if (
+    (slug && typeof slug !== 'string') ||
+    (description && typeof description !== 'string')
+  ) {
+    return Promise.reject({ status: 400, msg: 'Bad topic request' });
+  }
+  return db
+    .query(
+      `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *`,
+      [slug, description]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+};

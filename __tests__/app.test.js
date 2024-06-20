@@ -813,3 +813,74 @@ describe('POST /api/articles', () => {
       });
   });
 });
+
+describe('POST /api/topics', () => {
+  test('POST:201 inserts a new topic to the db and sends the new topic back to the client', () => {
+    const newTopic = {
+      slug: 'topic name here',
+      description: 'description here',
+    };
+    return request(app)
+      .post('/api/topics/')
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const { topic } = body;
+        expect(topic.slug).toBe('topic name here');
+        expect(topic.description).toBe('description here');
+      });
+  });
+  test('POST:201 inserts a new topic even with extra properties in the request body', () => {
+    const newTopic = {
+      slug: 'topic name here',
+      description: 'description here',
+      extraProperty: 'Hello world',
+    };
+    return request(app)
+      .post('/api/topics/')
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const { topic } = body;
+        expect(topic.slug).toBe('topic name here');
+        expect(topic.description).toBe('description here');
+      });
+  });
+  test('POST:400 sends an appropriate status and error message when provided with a bad topic (no topic body)', () => {
+    return request(app)
+      .post('/api/topics/')
+      .send({
+        description: 'description here',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('POST:400 sends an appropriate status and error message when provided with invalid slug type', () => {
+    const newTopic = {
+      slug: 123,
+      description: 'description here',
+    };
+    return request(app)
+      .post('/api/topics/')
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad topic request');
+      });
+  });
+  test('POST:400 sends an appropriate status and error message when provided with invalid description type', () => {
+    const newTopic = {
+      slug: 'topic name here',
+      description: 123,
+    };
+    return request(app)
+      .post('/api/topics/')
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad topic request');
+      });
+  });
+});

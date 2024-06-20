@@ -83,7 +83,6 @@ exports.patchVoteByArticleId = (req, res, next) => {
 
 exports.postArticle = (req, res, next) => {
   const { author, title, body, topic, article_img_url } = req.body;
-  console.log(req.body)
   const imageUrl = article_img_url || 'https://picsum.photos/200/300?grayscale';
   checkTopicExists(topic)
     .then(() => {
