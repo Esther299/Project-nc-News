@@ -119,5 +119,28 @@
       "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
       "votes": 101
     }
+  },
+  "POST /api/articles": {
+    "description": "Adds a new article with specified properties.",
+    "request_body": {
+      "author": "string - name of the author",
+      "title": "string - title of the article",
+      "body": "string - content of the article",
+      "topic": "string - topic of the article",
+      "article_img_url": "string (optional) - URL of the article image (defaults if not provided)"
+    },
+    "response": {
+      "article": {
+        "article_id": "integer - unique identifier for the article",
+        "author": "string - name of the author",
+        "title": "string - title of the article",
+        "body": "string - content of the article",
+        "topic": "string - topic of the article",
+        "article_img_url": "string - URL of the article image",
+        "votes": "integer - number of votes the article has",
+        "created_at": "string - timestamp when the article was created",
+        "comment_count": "integer - number of comments on the article"
+      }
+    }
   }
 }

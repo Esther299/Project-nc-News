@@ -21,13 +21,19 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectAllArticles = (topic, sort_by, order_by) => {
+exports.selectAllArticles = (
+  topic,
+  sort_by,
+  order_by,
+  limit = 10,
+  p = 1
+) => {
   let sqlQuery = `
-        SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
-               CAST(COUNT(comments.comment_id) AS INT) AS comment_count
-        FROM articles 
-        LEFT JOIN comments ON articles.article_id = comments.article_id 
-    `;
+    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+           CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+    FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id 
+  `;
 
   let queryValues = [];
   const validSortBy = [
@@ -43,6 +49,15 @@ exports.selectAllArticles = (topic, sort_by, order_by) => {
 
   let sortBy = 'created_at';
   let orderBy = 'DESC';
+
+  const page = p ? parseInt(p) : 1;
+
+  if (isNaN(limit) || limit <= 0 || isNaN(page) || page <= 0) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad query request',
+    });
+  }
 
   if (topic) {
     sqlQuery += 'WHERE articles.topic = $1 ';
@@ -73,12 +88,22 @@ exports.selectAllArticles = (topic, sort_by, order_by) => {
 
   sqlQuery += `GROUP BY articles.article_id `;
   sqlQuery += `ORDER BY ${sortBy} ${orderBy} `;
+
+  sqlQuery += `LIMIT $${queryValues.length + 1} `;
+  queryValues.push(limit);
+
+  sqlQuery += `OFFSET $${queryValues.length + 1}`;
+  queryValues.push((page - 1) * limit);
+
   sqlQuery += ';';
 
-  return db.query(sqlQuery, queryValues).then(({ rows }) => {
-    return rows;
-  });
+  return db
+    .query(sqlQuery, queryValues)
+    .then(({ rows }) => {
+      return rows;
+    })
 };
+
 
 exports.checkArticleExists = (article_id) => {
   return db
@@ -134,7 +159,6 @@ exports.updateVotesByArticleId = (article_id, newVote) => {
 };
 
 exports.createArticle = (author, title, body, topic, article_img_url) => {
-  console.log(author, title, body, topic, article_img_url);
   if (author && typeof author !== 'string') {
     return Promise.reject({ status: 400, msg: 'Bad user request' });
   }
@@ -152,7 +176,6 @@ exports.createArticle = (author, title, body, topic, article_img_url) => {
       [author, title, body, topic, article_img_url]
     )
     .then((result) => {
-      console.log(result);
       return result.rows[0];
-    })
+    });
 };

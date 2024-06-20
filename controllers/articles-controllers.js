@@ -21,8 +21,8 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { topic, sort_by, order_by } = req.query;
-  selectAllArticles(topic, sort_by, order_by)
+  const { topic, sort_by, order_by, limit, p } = req.query;
+  selectAllArticles(topic, sort_by, order_by, limit, p)
     .then((articles) => {
       res.status(200).send({ articles });
     })
@@ -83,7 +83,6 @@ exports.patchVoteByArticleId = (req, res, next) => {
 
 exports.postArticle = (req, res, next) => {
   const { author, title, body, topic, article_img_url } = req.body;
-  console.log(req.body)
   const imageUrl = article_img_url || 'https://picsum.photos/200/300?grayscale';
   checkTopicExists(topic)
     .then(() => {

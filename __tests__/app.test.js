@@ -94,7 +94,6 @@ describe('GET api articles', () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
-        expect(articles).toHaveLength(13);
         articles.forEach((article) => {
           expect(article).toMatchObject({
             author: expect.any(String),
@@ -435,7 +434,6 @@ describe('GET api articles queries', () => {
         .then(({ body }) => {
           const { articles } = body;
           expect(Array.isArray(articles)).toBe(true);
-          expect(articles).toHaveLength(12);
           articles.forEach((article) => {
             expect(article.topic).toBe('mitch');
             expect(article).toMatchObject({
@@ -486,7 +484,6 @@ describe('GET api articles sort queries', () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles).toHaveLength(13);
           expect(articles).toBeSortedBy('created_at', { descending: true });
         });
     });
@@ -507,7 +504,6 @@ describe('GET api articles sort queries', () => {
           .expect(200)
           .then(({ body }) => {
             const { articles } = body;
-            expect(articles).toHaveLength(13);
             expect(articles).toBeSortedBy(validColumn, { descending: true });
           });
       }
@@ -530,7 +526,6 @@ describe('GET api articles sort queries', () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles).toHaveLength(13);
           expect(articles).toBeSorted({ descending: true });
         });
     });
@@ -541,7 +536,6 @@ describe('GET api articles sort queries', () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles).toHaveLength(13);
           expect(articles).toBeSorted({ ascending: true });
         });
     });
@@ -810,6 +804,45 @@ describe('POST /api/articles', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('topic does not exist');
+      });
+  });
+});
+
+describe('GET /api/articles pagination', () => {
+  test('GET:200 sends an array of articles with default limit 10', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty('articles');
+        expect(body.articles).toHaveLength(10);
+      });
+  });
+  test('GET:200 sends an array of articles with custom limit and page', () => {
+    return request(app)
+      .get('/api/articles?limit=5&p=2')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(5);
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy('created_at', { descending: true });
+      });
+  });
+  test('GET:400 sends a message of "Bad query request" when passed an invalid pagination parameters', () => {
+    return request(app)
+      .get('/api/articles?limit=-10')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad query request');
+      });
+  });
+  test('GET:400 sends a message of "Bad query request" when passed an invalid pagination parameters', () => {
+    return request(app)
+      .get('/api/articles?p=0')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad query request');
       });
   });
 });
