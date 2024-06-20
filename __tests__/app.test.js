@@ -884,3 +884,27 @@ describe('POST /api/topics', () => {
       });
   });
 });
+
+describe('DELETE api article by Id', () => {
+  test('DELETE:204 deletes the specified article and sends no body back', () => {
+    return request(app).delete('/api/articles/3').expect(204);
+  });
+
+  test('DELETE:404 responds with an appropriate status and error message when given a non-existent id', () => {
+    return request(app)
+      .delete('/api/articles/9999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('article does not exist');
+      });
+  });
+
+  test('DELETE:400 responds with an appropriate status and error message when given an invalid id', () => {
+    return request(app)
+      .delete('/api/articles/not-a-article')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+});

@@ -6,4 +6,3 @@ topicsRouter.get(`/`, getTopics);
 topicsRouter.post(`/`, postTopics);
 
 module.exports = topicsRouter;
-

@@ -154,3 +154,42 @@ exports.createArticle = (author, title, body, topic, article_img_url) => {
       return result.rows[0];
     });
 };
+
+exports.removeArticleById = (article_id) => {
+  return db
+    .query('BEGIN')
+    .then(() => {
+      return db.query('SELECT * FROM articles WHERE article_id = $1', [
+        article_id,
+      ]);
+    })
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return db.query('ROLLBACK').then(() => {
+          return Promise.reject({ status: 404, msg: 'article does not exist' });
+        });
+      }
+      return db.query('DELETE FROM comments WHERE article_id = $1', [
+        article_id,
+      ]);
+    })
+    .then(() => {
+      return db.query(
+        'DELETE FROM articles WHERE article_id = $1 RETURNING *',
+        [article_id]
+      );
+    })
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return db.query('ROLLBACK').then(() => {
+          return Promise.reject({ status: 404, msg: 'article does not exist' });
+        });
+      }
+      return db.query('COMMIT');
+    })
+    .catch((err) => {
+      return db.query('ROLLBACK').then(() => {
+        throw err;
+      });
+    });
+};
