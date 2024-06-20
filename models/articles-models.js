@@ -45,12 +45,6 @@ exports.selectAllArticles = (topic, sort_by, order_by) => {
   let sortBy = 'created_at';
   let orderBy = 'DESC';
 
-  // if (topic && !validTopic.includes(topic)) {
-  //   return Promise.reject({
-  //     status: 400,
-  //     msg: 'Bad query request',
-  //   });
-  // }
 
   if (topic) {
     sqlQuery += 'WHERE articles.topic = $1 ';

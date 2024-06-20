@@ -313,7 +313,7 @@ describe('PATCH api articles by Id', () => {
       });
   });
 
-  test('PATCH:200 updates the votes of an article in the db by its id when adding a negative number', () => {
+  test('PATCH:200 updates the votes of an article in the db by its id even when adding an unrelated property', () => {
     const newVote = {
       inc_votes: 1,
       extraProperty: 'This is an extra property',
@@ -325,6 +325,7 @@ describe('PATCH api articles by Id', () => {
       .then(({ body }) => {
         const { article } = body;
         expect(article.votes).toBe(1);
+        expect(article.extraProperty).toBe(undefined);
       });
   });
 
@@ -462,15 +463,8 @@ describe('GET api articles queries', () => {
           expect(articles).toEqual([]);
         });
     });
-    // test('GET:400 sends an appropriate status and error message when given a non existing topic', () => {
-    //   return request(app)
-    //     .get('/api/articles?topic=banana')
-    //     .expect(400)
-    //     .then(({ body }) => {
-    //       expect(body.msg).toBe('Bad query request');
-    //     });
-    // });
   });
+
   describe('Comment_count query by Id', () => {
     test('GET:200 sends an that adds the comment_count when queried', () => {
       return request(app)
@@ -590,3 +584,102 @@ describe('GET api users by username', () => {
       });
   });
 });
+
+describe('PATCH api comments by Id', () => {
+  test('PATCH:200 updates the votes of a comment in the db by its id when adding a positive number', () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch('/api/comments/3')
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.votes).toBe(101);
+      });
+  });
+
+  test('PATCH:200 updates the votes of a comment in the db by its id when adding a negative number', () => {
+    const newVote = {
+      inc_votes: -100,
+    };
+    return request(app)
+      .patch('/api/comments/3')
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.votes).toBe(0);
+      });
+  });
+
+  test('PATCH:200 updates the votes of a comment in the db by its id even when adding an unrelated property', () => {
+    const newVote = {
+      inc_votes: 1,
+      extraProperty: 'This is an extra property',
+    };
+    return request(app)
+      .patch('/api/comments/3')
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.votes).toBe(101);
+        expect(comment.extraProperty).toBe(undefined);
+      });
+  });
+
+  test('PATCH:400 sends an appropriate status and error message when the provided vote property is incorrect', () => {
+    const newVote = {
+      votes: 1,
+    };
+    return request(app)
+      .patch('/api/comments/3')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+
+  test('PATCH:400 sends an appropriate status and error message when the provided vote type value is incorrect', () => {
+    const newVote = {
+      inc_votes: 'banana',
+    };
+    return request(app)
+      .patch('/api/comments/3')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+
+  test('PATCH:404 sends an appropriate status and error message when given a valid but non-existent article id', () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch('/api/comments/99999')
+      .send(newVote)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('comment does not exist');
+      });
+  });
+
+  test('PATCH:400 sends an appropriate status and error message when given an invalid id', () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch('/api/comments/not-an-comment')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+});
+
