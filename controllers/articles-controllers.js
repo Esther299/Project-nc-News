@@ -84,10 +84,10 @@ exports.patchVoteByArticleId = (req, res, next) => {
 
 exports.postArticle = (req, res, next) => {
   const { author, title, body, topic, article_img_url } = req.body;
-  const imageUrl = article_img_url || 'https://picsum.photos/200/300?grayscale';
+  // const imageUrl = article_img_url || 'https://picsum.photos/200/300?grayscale';
   checkTopicExists(topic)
     .then(() => {
-      return createArticle(author, title, body, topic, imageUrl);
+      return createArticle(author, title, body, topic, article_img_url);
     })
     .then((article) => {
       res.status(201).send({ article });
